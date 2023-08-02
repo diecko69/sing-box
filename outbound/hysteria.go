@@ -127,7 +127,7 @@ func NewHysteria(ctx context.Context, router adapter.Router, logger log.ContextL
 			dependencies: withDialerDependency(options.DialerOptions),
 		},
 		ctx:        ctx,
-		dialer:     dialer.New(router, options.DialerOptions),
+		dialer:     dialer.NewRedirectable(router, tag, options.DialerOptions),
 		serverAddr: options.ServerOptions.Build(),
 		tlsConfig:  tlsConfig,
 		quicConfig: quicConfig,

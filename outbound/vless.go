@@ -45,7 +45,7 @@ func NewVLESS(ctx context.Context, router adapter.Router, logger log.ContextLogg
 			tag:          tag,
 			dependencies: withDialerDependency(options.DialerOptions),
 		},
-		dialer:     dialer.New(router, options.DialerOptions),
+		dialer:     dialer.NewRedirectable(router, tag, options.DialerOptions),
 		serverAddr: options.ServerOptions.Build(),
 	}
 	var err error

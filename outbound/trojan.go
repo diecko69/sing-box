@@ -42,7 +42,7 @@ func NewTrojan(ctx context.Context, router adapter.Router, logger log.ContextLog
 			tag:          tag,
 			dependencies: withDialerDependency(options.DialerOptions),
 		},
-		dialer:     dialer.New(router, options.DialerOptions),
+		dialer:     dialer.NewRedirectable(router, tag, options.DialerOptions),
 		serverAddr: options.ServerOptions.Build(),
 		key:        trojan.Key(options.Password),
 	}

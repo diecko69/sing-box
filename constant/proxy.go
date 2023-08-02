@@ -27,4 +27,6 @@ const (
 const (
 	TypeSelector = "selector"
 	TypeURLTest  = "urltest"
+
+	TypeLoadBalance = "loadbalance"
 )

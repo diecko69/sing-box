@@ -11,7 +11,7 @@ import (
 	C "github.com/sagernet/sing-box/constant"
 	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing-box/option"
-	"github.com/sagernet/sing-dns"
+	dns "github.com/sagernet/sing-dns"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -49,7 +49,7 @@ func NewDirect(router adapter.Router, logger log.ContextLogger, tag string, opti
 		},
 		domainStrategy: dns.DomainStrategy(options.DomainStrategy),
 		fallbackDelay:  time.Duration(options.FallbackDelay),
-		dialer:         dialer.New(router, options.DialerOptions),
+		dialer:         dialer.NewRedirectable(router, tag, options.DialerOptions),
 		proxyProto:     options.ProxyProtocol,
 	}
 	if options.ProxyProtocol > 2 {

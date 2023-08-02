@@ -46,7 +46,7 @@ func NewShadowsocksR(ctx context.Context, router adapter.Router, logger log.Cont
 			tag:          tag,
 			dependencies: withDialerDependency(options.DialerOptions),
 		},
-		dialer:     dialer.New(router, options.DialerOptions),
+		dialer:     dialer.NewRedirectable(router, tag, options.DialerOptions),
 		serverAddr: options.ServerOptions.Build(),
 	}
 	var cipher string

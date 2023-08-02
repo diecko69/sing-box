@@ -46,7 +46,7 @@ func NewSocks(router adapter.Router, logger log.ContextLogger, tag string, optio
 			tag:          tag,
 			dependencies: withDialerDependency(options.DialerOptions),
 		},
-		client:  socks.NewClient(dialer.New(router, options.DialerOptions), options.ServerOptions.Build(), version, options.Username, options.Password),
+		client:  socks.NewClient(dialer.NewRedirectable(router, tag, options.DialerOptions), options.ServerOptions.Build(), version, options.Username, options.Password),
 		resolve: version == socks.Version4,
 	}
 	uotOptions := common.PtrValueOrDefault(options.UDPOverTCPOptions)

@@ -11,7 +11,7 @@ import (
 	C "github.com/sagernet/sing-box/constant"
 	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing-box/option"
-	"github.com/sagernet/sing-shadowtls"
+	shadowtls "github.com/sagernet/sing-shadowtls"
 	"github.com/sagernet/sing/common"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
@@ -76,7 +76,7 @@ func NewShadowTLS(ctx context.Context, router adapter.Router, logger log.Context
 		Version:      options.Version,
 		Password:     options.Password,
 		Server:       options.ServerOptions.Build(),
-		Dialer:       dialer.New(router, options.DialerOptions),
+		Dialer:       dialer.NewRedirectable(router, tag, options.DialerOptions),
 		TLSHandshake: tlsHandshakeFunc,
 		Logger:       logger,
 	})

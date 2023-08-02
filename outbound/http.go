@@ -26,7 +26,7 @@ type HTTP struct {
 }
 
 func NewHTTP(router adapter.Router, logger log.ContextLogger, tag string, options option.HTTPOutboundOptions) (*HTTP, error) {
-	detour, err := tls.NewDialerFromOptions(router, dialer.New(router, options.DialerOptions), options.Server, common.PtrValueOrDefault(options.TLS))
+	detour, err := tls.NewDialerFromOptions(router, dialer.NewRedirectable(router, tag, options.DialerOptions), options.Server, common.PtrValueOrDefault(options.TLS))
 	if err != nil {
 		return nil, err
 	}
