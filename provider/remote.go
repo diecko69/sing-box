@@ -304,6 +304,8 @@ func (s *Remote) applyOptions(options *option.Outbound) error {
 		options.ShadowsocksOptions.DialerOptions = s.dialerOptions
 	case C.TypeVMess:
 		options.VMessOptions.DialerOptions = s.dialerOptions
+	case C.TypeVLESS:
+		options.VLESSOptions.DialerOptions = s.dialerOptions
 	case C.TypeTrojan:
 		options.TrojanOptions.DialerOptions = s.dialerOptions
 	case C.TypeWireGuard:
