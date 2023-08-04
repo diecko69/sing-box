@@ -13,12 +13,30 @@ func TestTrojanQt5(t *testing.T) {
 	t.Parallel()
 	testCases := []*link.TrojanQt5{
 		{
-			Remarks:       "remarks",
+			Remarks:       "remarks WS TLS",
 			Address:       "192.168.1.1",
 			Port:          443,
 			Password:      "password-密码",
 			AllowInsecure: true,
 			TFO:           true,
+			Type:          "ws",
+			Host:          "www.example.com",
+			Path:          "/path",
+			TLS:           true,
+			SNI:           "www.example.com",
+		},
+		{
+			Remarks:       "remarks gRPC",
+			Address:       "192.168.1.1",
+			Port:          443,
+			Password:      "33ef9206-117a-48d5-b6e9-e778807a5afb",
+			AllowInsecure: false,
+			TFO:           false,
+			Type:          "grpc",
+			Host:          "www.example.com",
+			Path:          "grpc-service",
+			TLS:           true,
+			SNI:           "www.example.com",
 		},
 	}
 	for i, tc := range testCases {

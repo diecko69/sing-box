@@ -32,11 +32,18 @@ type TrojanQt5 struct {
 	Password      string
 	AllowInsecure bool
 	TFO           bool
+
+	Type string
+	Host string
+	Path string
+
+	TLS bool
+	SNI string
 }
 
 // Outbound implements Link
 func (l *TrojanQt5) Outbound() (*option.Outbound, error) {
-	return &option.Outbound{
+	out := &option.Outbound{
 		Type: C.TypeTrojan,
 		Tag:  l.Remarks,
 		TrojanOptions: option.TrojanOutboundOptions{
@@ -45,16 +52,40 @@ func (l *TrojanQt5) Outbound() (*option.Outbound, error) {
 				ServerPort: l.Port,
 			},
 			Password: l.Password,
-			TLS: &option.OutboundTLSOptions{
-				Enabled:    true,
-				ServerName: l.Address,
-				Insecure:   l.AllowInsecure,
-			},
 			DialerOptions: option.DialerOptions{
 				TCPFastOpen: l.TFO,
 			},
 		},
-	}, nil
+	}
+	if l.TLS {
+		out.TrojanOptions.TLS = &option.OutboundTLSOptions{
+			Enabled:    true,
+			ServerName: l.SNI,
+			Insecure:   l.AllowInsecure,
+		}
+	}
+	opt := &option.V2RayTransportOptions{
+		Type: l.Type,
+	}
+	switch l.Type {
+	case "":
+		opt = nil
+	case C.V2RayTransportTypeHTTP:
+		opt.HTTPOptions.Path = l.Path
+		if l.Host != "" {
+			opt.HTTPOptions.Host = []string{l.Host}
+			opt.HTTPOptions.Headers["Host"] = []string{l.Host}
+		}
+	case C.V2RayTransportTypeWebsocket:
+		opt.WebsocketOptions.Path = l.Path
+		opt.WebsocketOptions.Headers = map[string]option.Listable[string]{
+			"Host": {l.Host},
+		}
+	case C.V2RayTransportTypeGRPC:
+		opt.GRPCOptions.ServiceName = l.Path
+	}
+	out.TrojanOptions.Transport = opt
+	return out, nil
 }
 
 // ParseTrojanQt5 parses a Trojan-Qt5 link
@@ -96,6 +127,18 @@ func ParseTrojanQt5(u *url.URL) (*TrojanQt5, error) {
 			default:
 				link.TFO = true
 			}
+		case "type":
+			link.Type = values[0]
+		case "host":
+			link.Host = values[0]
+		case "path":
+			link.Path = values[0]
+		case "servicename":
+			link.Path = values[0]
+		case "security":
+			link.TLS = values[0] == "tls"
+		case "sni":
+			link.SNI = values[0]
 		}
 	}
 	return link, nil
@@ -114,6 +157,20 @@ func (l *TrojanQt5) URL() (string, error) {
 	}
 	if l.TFO {
 		query.Set("tfo", "1")
+	}
+	query.Set("type", l.Type)
+	query.Set("host", l.Host)
+	switch l.Type {
+	case C.V2RayTransportTypeHTTP:
+		query.Set("path", l.Path)
+	case C.V2RayTransportTypeWebsocket:
+		query.Set("path", l.Path)
+	case C.V2RayTransportTypeGRPC:
+		query.Set("serviceName", l.Path)
+	}
+	if l.TLS {
+		query.Set("security", "tls")
+		query.Set("sni", l.SNI)
 	}
 	uri.RawQuery = query.Encode()
 	return uri.String(), nil
