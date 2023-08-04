@@ -134,7 +134,7 @@ func ParseVless(u *url.URL) (*Vless, error) {
 			link.TransportHost = value[0]
 		case "path":
 			link.TransportPath = value[0]
-		case "serviceName":
+		case "servicename":
 			link.TransportPath = value[0]
 		case "sni":
 			link.SNI = value[0]
