@@ -1,0 +1,46 @@
+name: Build Android Arm64
+on:
+  - workflow_dispatch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Versioning
+        run: |
+          ##
+          echo "NAME=sing-box" >> $GITHUB_ENV
+          VERSION=Beta-69-$(git rev-parse --short HEAD)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "TAGS=with_quic,with_grpc,with_dhcp,with_wireguard,with_shadowsocksr,with_ech,with_utls,with_clash_api,with_v2ray_api,with_gvisor,with_provider_loadbalance" >> $GITHUB_ENV
+          echo "LDFLAGS=-X 'github.com/sagernet/sing-box/constant.Version=${VERSION}' -w -s -buildid=" >> $GITHUB_ENV
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: stable
+      - name: Build Android
+        run: |
+          CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang
+          CGO_ENABLED=1 CC=${CC} GOARCH=arm64 GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o ./${NAME}
+      - name: Archive
+        id: archive
+        run: |
+          #
+          GZ="${NAME}-android-arm64-${VERSION}.gz"
+          tar -caf $GZ ./${NAME}
+          echo "gz=$GZ" >> $GITHUB_OUTPUT
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ steps.archive.outputs.gz }}
+      # - name: SendTo Telegram
+      #   run: |
+      #     #
+      #     CHAT_ID=${{ secrets.TELEGRAM_TO }}
+      #     TOKEN=${{ secrets.TELEGRAM_TOKEN }}
+      #     curl -X POST \
+      #      -H "content-type: multipart/form-data" \
+      #      -F document=@"${{ steps.archive.outputs.gz }}" \
+      #      -F chat_id=$CHAT_ID \
+      #      https://api.telegram.org/bot$TOKEN/sendDocument
