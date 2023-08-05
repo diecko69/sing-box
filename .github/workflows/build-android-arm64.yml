@@ -34,13 +34,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: ${{ steps.archive.outputs.gz }}
-      # - name: SendTo Telegram
-      #   run: |
-      #     #
-      #     CHAT_ID=${{ secrets.TELEGRAM_TO }}
-      #     TOKEN=${{ secrets.TELEGRAM_TOKEN }}
-      #     curl -X POST \
-      #      -H "content-type: multipart/form-data" \
-      #      -F document=@"${{ steps.archive.outputs.gz }}" \
-      #      -F chat_id=$CHAT_ID \
-      #      https://api.telegram.org/bot$TOKEN/sendDocument
+      - name: SendTo Telegram
+        run: |
+          #
+          CHAT_ID=${{ secrets.TELEGRAM_TO }}
+          TOKEN=${{ secrets.TELEGRAM_TOKEN }}
+          curl -X POST \
+           -H "content-type: multipart/form-data" \
+           -F document=@"${{ steps.archive.outputs.gz }}" \
+           -F chat_id=$CHAT_ID \
+           https://api.telegram.org/bot$TOKEN/sendDocument
