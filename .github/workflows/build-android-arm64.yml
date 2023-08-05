@@ -23,11 +23,17 @@ jobs:
         run: |
           CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang
           CGO_ENABLED=1 CC=${CC} GOARCH=arm64 GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o ./${NAME} ./cmd/sing-box
+      - name: Install UPX
+        uses: crazy-max/ghaction-upx@v2
+        with:
+          install-only: true
+      - name: Run UPX
+        run: upx --best ./${NAME}
       - name: Archive
         id: archive
         run: |
           #
-          GZ="${NAME}-android-arm64-${VERSION}.gz"
+          GZ="${NAME}-android-arm64-${VERSION}.tgz"
           tar -caf $GZ ./${NAME}
           echo "gz=$GZ" >> $GITHUB_OUTPUT
       - name: Upload artifact
